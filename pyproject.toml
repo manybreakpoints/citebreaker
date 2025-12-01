@@ -1,0 +1,15 @@
+[project]
+name = "citebreaker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mlflow>=3.6.0",
+    "openai>=2.8.1",
+]
+
+[tool.uv.scripts]
+mlflow-dev = "mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts --host 127.0.0.1 --port 5000 --workers 4"
+mlflow-prod = "mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlartifacts --host 0.0.0.0 --port 5000 --workers 8 --serve-artifacts"
+mlflow-clean = "rm -rf mlflow.db mlartifacts"
