@@ -1,37 +1,39 @@
 #!/usr/bin/env -S uv run --script
-import os
-import openai
 import mlflow
-from mlflow.genai.scorers import Correctness, Guidelines
+import openai
+
+from mlflow.genai import evaluate
+from mlflow.genai.datasets import search_datasets
+from mlflow.genai.scorers import Correctness, Guidelines, scorer
+
+from bot import CitationBot
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("citebreaker")
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+mlflow.openai.autolog()
 
-dataset = [
-    {
-        "inputs": {"question": "Can MLflow manage prompts?"},
-        "expectations": {"expected_response": "Yes!"},
-    },
-    {
-        "inputs": {"question": "Can MLflow create a taco for my lunch?"},
-        "expectations": {
-            "expected_response": "No, unfortunately, MLflow is not a taco maker."
-        },
-    },
-]
+@scorer
+def contains_quotes(outputs: str, expectations: dict) -> float:
+    """Check if response contains qoutes."""
+    return '"' in outputs
 
-def predict_fn(question: str) -> str:
-    response = client.chat.completions.create(
-        model="gpt-4o-mini", messages=[{"role": "user", "content": question}]
-    )
-    return response.choices[0].message.content
-
-results = mlflow.genai.evaluate(
-    data=dataset,
-    predict_fn=predict_fn,
-    scorers=[
-        Correctness(),
-        Guidelines(name="is_english", guidelines="The answer must be in English"),
-    ],
+datasets = search_datasets(
+    experiment_ids=["citebreaker"],
+    filter_string="tags.status = 'active' AND name LIKE '%history%'",
+    order_by=["last_update_time DESC"],
+    max_results=10,
 )
+bot = CitationBot()
+scorers = [
+    contains_quotes,
+]
+for ds in datasets:
+    print(f"{ds.name} ({ds.dataset_id}): {len(ds.records)} records")
+results = evaluate(
+    data=datasets[0],
+    predict_fn=bot.answer,
+    scorers=scorers,
+    model_id="citation-bot-v1",
+)
+metrics = results.metrics
+detailed_results = results.tables["eval_results_table"]

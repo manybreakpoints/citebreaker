@@ -2,7 +2,6 @@ import mlflow
 from mlflow.genai.datasets import create_dataset
 from data import questions
 
-
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
 
 dataset = create_dataset(
@@ -11,20 +10,7 @@ dataset = create_dataset(
     tags={"version": "1.0", "team": "ME", "status": "active"},
 )
 records = []
-for question in questions.questions:
+for question in questions.questions[:5]:
     records.append({"inputs": {"question": question}})
 dataset.merge_records(records)
 print(f"Dataset now has {len(dataset.records)} records")
-
-
-
-
-from mlflow.genai.datasets import search_datasets
-datasets = search_datasets(
-    experiment_ids=["citebreaker"],
-    filter_string="tags.status = 'active' AND name LIKE '%history%'",
-    order_by=["last_update_time DESC"],
-    max_results=10,
-)
-for ds in datasets:
-    print(f"{ds.name} ({ds.dataset_id}): {len(ds.records)} records")
