@@ -1,3 +1,4 @@
+#!/usr/bin/env -S uv run --script
 import os
 import openai
 import mlflow
