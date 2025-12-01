@@ -1,3 +1,4 @@
+#!/usr/bin/env -S uv run --script
 import mlflow
 from mlflow.genai.datasets import create_dataset
 from data import questions
@@ -11,6 +12,7 @@ dataset = create_dataset(
 )
 records = []
 for question in questions.questions[:5]:
-    records.append({"inputs": {"question": question}})
+    records.append({"inputs": {"question": question},
+        "expectations": {}})
 dataset.merge_records(records)
 print(f"Dataset now has {len(dataset.records)} records")

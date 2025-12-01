@@ -5,8 +5,9 @@ mlflow.openai.autolog()
 
 
 class CitationBot:
-    def __init__(self):
+    def __init__(self, temperature=0.3):
         self.client = openai.OpenAI()
+	self.temperature = temperature
         with open('data/History_of_Denmark.md', 'r') as file:
             self.knowledge_base = file.read()
 
@@ -19,12 +20,12 @@ class CitationBot:
         response = self.client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are a an answer and citation bot that creates good answers with precise citations from your large context of danish history. Always cite in quoutes and be very correct when citing."},
+                {"role": "system", "content": "You are a an citation bot that creates a very brief answers with only one verbatum citation in double quotes from the provided context."},
                 {
                     "role": "user",
                     "content": f"Context: {context}\n\nQuestion: {question}",
                 },
             ],
-            temperature=0.3,
+            temperature=self.temperature,
         )
         return response.choices[0].message.content
