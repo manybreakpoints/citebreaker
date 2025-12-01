@@ -5,7 +5,7 @@ import mlflow
 from mlflow.genai.scorers import Correctness, Guidelines
 
 mlflow.set_tracking_uri("http://127.0.0.1:5000")
-mlflow.set_experiment("genai-evaluation")
+mlflow.set_experiment("citebreaker")
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 dataset = [
