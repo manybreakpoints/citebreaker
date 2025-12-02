@@ -7,7 +7,7 @@ mlflow.openai.autolog()
 class CitationBot:
     def __init__(self, temperature=0.3):
         self.client = openai.OpenAI()
-	self.temperature = temperature
+        self.temperature = temperature
         with open('data/History_of_Denmark.md', 'r') as file:
             self.knowledge_base = file.read()
 

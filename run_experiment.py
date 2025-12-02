@@ -1,4 +1,5 @@
 #!/usr/bin/env -S uv run --script
+import re
 import mlflow
 import openai
 
@@ -17,18 +18,18 @@ with open('data/History_of_Denmark.md', 'r') as file:
 
 @scorer
 def contains_quotes(outputs: str, expectations: dict) -> float:
-    """Check if response contains quotes."""
     return '"' in outputs
 
 @scorer
 def contains_single_citation(outputs: str, expectations: dict) -> float:
-    """Check if response contains quotes."""
     return outputs.count('"') == 2
 
-# @scorer  # TODO make this check that knowledge base in used 1 to 1 text
-# def contains_single_citation(outputs: str, expectations: dict) -> float:
-#     """Check if response contains quotes."""
-#     return outputs.count(") == 2
+@scorer
+def is_verbatim_citation(outputs: str, expectations: dict) -> float:
+    if not contains_single_citation(outputs, expectations):
+        return False
+    match = re.search(r'"(.*?)"', outputs).group(1)[:-1]
+    return match in knowledge_base
 
 datasets = search_datasets(
     experiment_ids=["citebreaker"],
@@ -42,6 +43,7 @@ bot = CitationBot(temperature=0.5)
 scorers = [
     contains_quotes,
     contains_single_citation,
+    is_verbatim_citation,
 ]
 results = evaluate(
     data=datasets[0],
