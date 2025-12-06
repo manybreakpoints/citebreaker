@@ -9,39 +9,67 @@ REF_LOWER_AZ = re.sub(r"[^a-z]", "", REF_LOWER)
 
 
 @scorer
-def contains_any_quotes(outputs: str, expectations: dict) -> float:
+def contains_any_quotes(outputs: str, expectations: dict) -> bool:
     return '"' in outputs
 
 
 @scorer
-def contains_single_quote(outputs: str, expectations: dict = {}) -> float:
+def contains_single_quote(outputs: str, expectations: dict = {}) -> bool:
     return outputs.count('"') == 2
 
 
 def verbatim_quote_check(outputs: str, lower=False, az_only=False):
     if not contains_single_quote(outputs):
         return False
-
-    # quote_lower = knowledge_base.lower()
-    # knowledge_base_az = re.sub(r'[^a-z]', '', knowledge_base_lower)
-
     quote = re.search(r'"(.*?)"', outputs).group(1)[:-1]
-    return quote in REF
+
+    if lower and az_only:
+        return quote.lower() in REF_LOWER
+    if lower and az_only:
+        print(re.sub(r"[^a-z]", "", quote.lower()))
+        return re.sub(r"[^a-z]", "", quote.lower()) in REF_LOWER_AZ
+    if lower and az_only:
+        return quote in REF
+    if lower and az_only:
+        raise NotImplementedError
 
 
 @scorer
-def is_verbatim_quote(outputs: str, expectations: dict) -> float:
+def is_verbatim_quote(outputs: str, expectations: dict) -> bool:
+    """ "100% corect quote, string matching."""
     return verbatim_quote_check(outputs)
 
 
 @scorer
-def has_explanation(outputs: str, expectations: dict) -> float:
-    pass
-    # TODO
+def is_verbatim_lower_quote(outputs: str, expectations: dict) -> bool:
+    """ "Correct quote regardsless of capitalisation."""
+    return verbatim_quote_check(outputs, lower=True)
+
+
+@scorer
+def is_verbatim_alpha_quote(outputs: str, expectations: dict) -> bool:
+    """ "Correct quote regarding only lower case a to z chars."""
+    return verbatim_quote_check(outputs, lower=True, az_only=True)
+
+
+@scorer
+def has_more_than_5_chars_nonquote(outputs: str, expectations: dict) -> bool:
+    """Evaluate if response also contain context besides the quote."""
+    return len(re.sub(r'"[^"]*"', "", outputs)) > 5
+
+
+@scorer
+def percentage_nonquote(outputs: str, expectations: dict) -> float:
+    """Return percentage of non-quote text to response text length"""
+    return 100 * len(re.sub(r'"[^"]*"', "", outputs)) / len(outputs)
 
 
 scorers = [
     contains_any_quotes,
     contains_single_quote,
     is_verbatim_quote,
+    is_verbatim_lower_quote,
+    is_verbatim_alpha_quote,
+    has_more_than_5_chars_nonquote,
+    percentage_nonquote,
 ]
