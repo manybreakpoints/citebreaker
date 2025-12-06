@@ -11,3 +11,18 @@ wheels/
 
 # Cache
 .cache/
+
+# Vim 
+*.swp
+*.swo
+*.un~
+*.vim
+*.swn
+.vim/
+.vimrc
+.vimrc.bak
+.vimrc.local
+.vimrc.local.bak
+.vim/bundle/
+.vim/pack/
+.vim/plugged/
