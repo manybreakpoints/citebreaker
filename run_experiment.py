@@ -3,7 +3,7 @@ import mlflow
 
 from mlflow.genai import evaluate
 from mlflow.genai.datasets import search_datasets
-from bot import CitationBot
+from citation_bot import CitationBot
 from scorer import scorers
 
 
