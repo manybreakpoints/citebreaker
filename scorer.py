@@ -22,37 +22,33 @@ def verbatim_quote_check(outputs: str, lower=False, az_only=False):
     if not contains_single_quote(outputs):
         return False
     quote = re.search(r'"(.*?)"', outputs).group(1)[:-1]
-    if lower and az_only:
-        return quote.lower() in REF_LOWER
-    if lower and az_only:
-        print(re.sub(r"[^a-z]", "", quote.lower()))
-        return re.sub(r"[^a-z]", "", quote.lower()) in REF_LOWER_AZ
-    if lower and az_only:
-        return quote in REF
-    raise NotImplementedError
+    if lower:
+        if az_only:
+            return re.sub(r"[^a-z]", "", quote.lower()) in REF_LOWER_AZ
+        else:
+            return quote.lower() in REF_LOWER
+    else:
+        if az_only:
+            raise NotImplementedError
+        else:
+            return quote in REF
 
 
 @scorer
 def is_verbatim_quote(outputs: str, expectations: dict) -> bool:
     """100% corect quote, string matching."""
-    if not contains_single_quote(outputs):
-        return False
     return verbatim_quote_check(outputs)
 
 
 @scorer
 def is_verbatim_lower_quote(outputs: str, expectations: dict) -> bool:
     """ "Correct quote regardsless of capitalisation."""
-    if not contains_single_quote(outputs):
-        return False
     return verbatim_quote_check(outputs, lower=True)
 
 
 @scorer
 def is_verbatim_alpha_quote(outputs: str, expectations: dict) -> bool:
     """Correct quote regarding only lower case a to z chars."""
-    if not contains_single_quote(outputs):
-        return False
     return verbatim_quote_check(outputs, lower=True, az_only=True)
 
 
