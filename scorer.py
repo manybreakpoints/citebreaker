@@ -53,18 +53,18 @@ def is_verbatim_alpha_quote(outputs: str, expectations: dict) -> bool:
 
 
 @scorer
-def has_more_than_5_chars_nonquote(outputs: str, expectations: dict) -> bool:
+def has_more_than_5_chars_nonquote(outputs: str, expectations: dict) -> bool | None:
     """Evaluate if response also contain context besides the quote."""
     if not contains_single_quote(outputs):
-        return False
+        return None
     return len(re.sub(r'"[^"]*"', "", outputs)) > 5
 
 
 @scorer
-def percentage_nonquote(outputs: str, expectations: dict) -> float:
+def percentage_nonquote(outputs: str, expectations: dict) -> float | None:
     """Return percentage of non-quote text to response text length"""
     if not contains_single_quote(outputs):
-        return 0
+        return None
     return 100 * len(re.sub(r'"[^"]*"', "", outputs)) / len(outputs)
 
 

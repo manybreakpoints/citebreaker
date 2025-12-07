@@ -8,7 +8,7 @@ dataset = create_dataset(
     tags={"version": "1.0", "team": "ME", "status": "active"},
 )
 records = []
-for question in questions.questions:
+for question in questions.questions[:50]:
     records.append({"inputs": {"question": question}, "expectations": {}})
 dataset.merge_records(records)
 print(f"Dataset now has {len(dataset.records)} records")

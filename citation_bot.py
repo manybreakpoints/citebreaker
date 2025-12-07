@@ -18,14 +18,15 @@ class CitationBot:
     def answer(self, question: str) -> str:
         context = self._get_context(question)
         response = self.client.chat.completions.create(
-            # model="gpt-4o-mini",
-            model="gpt-5.1",
+            model="gpt-4o-mini",
+            # model="gpt-5.1",
             messages=[
                 {
                     "role": "system",
                     "content": "You are a an citation bot that creates a brief answers with only "
-                    "one verbatum citation in double quotes from the provided context. Dont use ... and stitch qoutes "
-                    "together. Give context and a the qoute.",
+                    'one verbatum citation in double quote symbols (like: "the relevant quote"), '
+                    "from the provided context. Quote in full, don't stich "
+                    "sentences together. Give context/explanation and a the qoute.",
                 },
                 {
                     "role": "user",
