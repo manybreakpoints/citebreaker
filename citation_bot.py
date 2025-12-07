@@ -18,8 +18,8 @@ class CitationBot:
     def answer(self, question: str) -> str:
         context = self._get_context(question)
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
-            # model="gpt-5.1",
+            # model="gpt-4o-mini",
+            model="gpt-5.1",
             messages=[
                 {
                     "role": "system",
